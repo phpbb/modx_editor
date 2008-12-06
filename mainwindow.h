@@ -6,6 +6,7 @@
 
 class Page;
 class ModXData;
+class PagePanel;
 
 class MainWindow : public QMainWindow
 {
@@ -18,10 +19,14 @@ public:
 public slots:
 	void newFile();
 	void loadFile();
-	void saveFile();
-	void saveFileAs();
+	bool saveFile();
+	bool saveFileAs();
+	bool askSave();
 
 	void changePage(int i);
+
+protected:
+	void closeEvent(QCloseEvent *event);
 
 private:
 	void addPage(const QString &title, Page *page);
@@ -29,9 +34,10 @@ private:
 
 	void setCurrentFile(const QString &file);
 
-	QString currentFile;
+	PagePanel *pagePanel;
 
-    Ui::MainWindowClass ui;
+	Ui::MainWindowClass ui;
+	bool init;
 };
 
 #endif // MAINWINDOW_H

@@ -33,7 +33,13 @@ private:
 
 	void readActionGroup();
 
+	QList<Action> readOpen();
+	QList<Action> readEdit();
+
+	QList<Action> readInlineEdit();
+
 	ModXData *m_data;
+
 };
 
 QDebug operator<<(QDebug dbg, const QXmlStreamAttribute &a);

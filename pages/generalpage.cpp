@@ -5,6 +5,23 @@
 GeneralPage::GeneralPage(QWidget *parent) :
 	Page(parent){
    ui.setupUi(this);
+
+   QStringList licenses;
+   licenses	<< "http://opensource.org/licenses/agpl-v3.html GNU Affero General Public License v3"
+			<< "http://opensource.org/licenses/gpl-license.php GNU General Public License v2"
+			<< "http://opensource.org/licenses/gpl-license.php GNU General Public License v3"
+			<< "http://www.apache.org/licenses/ Apache License, Version 2.0"
+			<< "http://opensource.org/licenses/lgpl-license.php GNU Lesser General Public License v2"
+			<< "http://opensource.org/licenses/lgpl-license.php GNU Lesser General Public License v3"
+			<< "http://opensource.org/licenses/bsd-license.php BSD License";
+   ui.license->addItems(licenses);
+
+   QStringList installationLevels;
+   installationLevels	<< tr("Easy")
+						<< tr("Intermediate")
+						<< tr("hard");
+
+   ui.installLevel->addItems(installationLevels);
 }
 
 void GeneralPage::setData(const ModXData *data)
@@ -13,9 +30,9 @@ void GeneralPage::setData(const ModXData *data)
 	ui.version->setText(data->version);
 	ui.description->setPlainText(data->description["en"]);
 	ui.authorNotes->setPlainText(data->authorNotes["en"]);
-	ui.license->setText(data->license);
+	ui.license->setEditText(data->license);
 
-	ui.installLevel->setText(data->installLevel);
+	ui.installLevel->setCurrentIndex(int(data->installLevel));
 	ui.installTime->setValue(data->installTime);
 	ui.targetVersion->setText(data->targetVersion);
 }
@@ -26,9 +43,9 @@ void GeneralPage::getData(ModXData *data)
 	data->version = ui.version->text();
 	data->description["en"] = ui.description->toPlainText();
 	data->authorNotes["en"] = ui.authorNotes->toPlainText();
-	data->license = ui.license->text();
+	data->license = ui.license->currentText();
 
-	data->installLevel = ui.installLevel->text();
+	data->installLevel = ModXData::InstallationLevel(ui.installLevel->currentIndex());
 	data->installTime = ui.installTime->value();
 	data->targetVersion = ui.targetVersion->text();
 }

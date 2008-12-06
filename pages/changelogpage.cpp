@@ -141,15 +141,3 @@ void ChangelogPage::changeEvent(QEvent *e)
     }
 }
 
-void ChangelogPage::updateVersionList()
-{
-/*	ui.versionList->clear();
-qDebug() << "-------!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!-----------";
-qDebug() << entries;
-	for (int i = 0; i < entries.count(); ++i)
-	{
-qDebug() << "------------------";
-qDebug() << entries.at(i);
-		ui.versionList->addItem(entries.at(i)->version);
-	}*/
-}

@@ -51,6 +51,7 @@ void AuthorGroupPage::updateDetails(const QItemSelection &newSelection, const QI
 
 			author.userName = ui.userName->text();
 			author.realName = ui.realName->text();
+			author.email	= ui.email->text();
 			author.homePage = ui.homePage->text();
 			author.contributionStatus = ui.contributionStatus->text();
 			author.contributionFrom = ui.contributionFrom->date();
@@ -72,6 +73,8 @@ void AuthorGroupPage::updateDetails(const QItemSelection &newSelection, const QI
 
 	ui.userName->setText(author.userName);
 	ui.realName->setText(author.realName);
+	ui.email->setText(author.email);
+
 	ui.homePage->setText(author.homePage);
 	ui.contributionStatus->setText(author.contributionStatus);
 	ui.contributionFrom->setDate(author.contributionFrom);

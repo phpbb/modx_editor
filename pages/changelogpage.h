@@ -29,8 +29,6 @@ protected:
     virtual void changeEvent(QEvent *e);
 
 private:
-	void updateVersionList();
-
 	ListModel<ChangelogEntry> *model;
 	Ui::ChangelogPage ui;
 };

@@ -9,19 +9,26 @@
 #include "pages/changelogpage.h"
 #include "pages/sqlpage.h"
 #include "pages/filepage.h"
+#include "pages/editedfilespage.h"
+#include "pages/fileeditpage.h"
 #include "pages/diypage.h"
 
 
+
 #include <QFileDialog>
+#include <QMessageBox>
 #include <QDesktopServices>
 #include <QListWidgetItem>
+#include <QCloseEvent>
 
 #include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
     : QMainWindow(parent, flags)
 {
+	init = true;
 	ui.setupUi(this);
+
 
 	setCurrentFile("Untitled");
 
@@ -29,19 +36,38 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 	connect(ui.actionOpen,	SIGNAL(triggered()),	this,	SLOT(loadFile()));
 	connect(ui.actionSave,	SIGNAL(triggered()),	this,	SLOT(saveFile()));
 	connect(ui.actionSaveAs,SIGNAL(triggered()),	this,	SLOT(saveFileAs()));
-	connect(ui.actionQuit,	SIGNAL(triggered()),	qApp,	SLOT(quit()));
+	connect(ui.actionQuit,	SIGNAL(triggered()),	this,	SLOT(close()));
 
 	connect(ui.pageList, SIGNAL(currentRowChanged(int)), this, SLOT(changePage(int)));
 
+	EditedFilesPage *editedFilesPage = new EditedFilesPage(ui.stackedWidget);
+	FileEditPage *fileEditPage = new FileEditPage(ui.stackedWidget);
+
+	fileEditPage->setFileModel(editedFilesPage->model());
+
+
 	ui.stackedWidget->removeWidget(ui.stackedWidget->currentWidget());
+//	ui.stackedWidget->removeTab(ui.stackedWidget->currentIndex());
 	addPage(tr("General Info"),		new GeneralPage(ui.stackedWidget));
 	addPage(tr("Authors"),			new AuthorGroupPage(ui.stackedWidget));
 	addPage(tr("Changelog"),		new ChangelogPage(ui.stackedWidget));
 	addPage(tr("SQL"),				new SqlPage(ui.stackedWidget));
-	addPage(tr("Files"),			new FilePage(ui.stackedWidget));
+	addPage(tr("Copy Files"),		new FilePage(ui.stackedWidget));
+	addPage(tr("Files to Edit"),	editedFilesPage);
+	addPage(tr("File Edits"),		fileEditPage);
 	addPage(tr("Do-It-Yourself"),	new DIYPage(ui.stackedWidget));
 
 	ui.pageList->setCurrentRow(0);
+
+	{
+		// GAH!!!
+		QList<int> sizes;
+		sizes << 100 << 1000;
+		ui.splitter->setSizes(sizes);
+		ui.splitter->setCollapsible(1, false);
+	}
+	newFile();
+	init = false;
 }
 
 MainWindow::~MainWindow()
@@ -51,7 +77,17 @@ MainWindow::~MainWindow()
 
 void MainWindow::newFile()
 {
+	if (!init)
+	{
+		if (!askSave())
+		{
+			return;
+		}
+	}
+	setCurrentFile("Untitled");
 	ModXData data;
+	data.authorGroup << Author();
+	data.history << ChangelogEntry();
 	setData(&data);
 }
 
@@ -59,9 +95,9 @@ void MainWindow::loadFile()
 {
 	QString fileName = QFileDialog::getOpenFileName(
 			this,
-			tr("Open ModX file..."),
+			tr("Open MODX file..."),
 			QDesktopServices::storageLocation(QDesktopServices::HomeLocation),
-			"ModX files (*.xml *.modx)");
+			"MODX files (*.xml *.modx)");
 
 	if (fileName == "")
 		return;
@@ -75,24 +111,24 @@ void MainWindow::loadFile()
 	if(!reader.read(&file))
 	{
 qDebug() << "FAIL!!";
+qDebug() << reader.errorString();
+		ui.statusBar->showMessage(tr("Failed opening file: %1. Error: %2").arg(file.fileName()).arg(reader.errorString()));
 		return;
 	}
 qDebug() << "SUCESS!!";
 
 	ModXData *data = reader.data();
-
-
 	setData(data);
-
 	delete data;
+
+	ui.statusBar->showMessage(tr("Opened file: %1").arg(file.fileName()));
 }
 
-void MainWindow::saveFile()
+bool MainWindow::saveFile()
 {
 	if (ModXApp::currentFile == "Untitled")
 	{
-		saveFileAs();
-		return;
+		return saveFileAs();
 	}
 
 	ModXData data;
@@ -109,24 +145,60 @@ void MainWindow::saveFile()
 	writer.setData(&data);
 
 	writer.write(&file);
+	ui.statusBar->showMessage(tr("File Saved"));
+	return true;
 }
 
 
-void MainWindow::saveFileAs()
+bool MainWindow::saveFileAs()
 {
 	QString fileName = QFileDialog::getSaveFileName(
 			this,
 			tr("Save file as..."),
 			QDesktopServices::storageLocation(QDesktopServices::HomeLocation),
-			"ModX files (*.xml *.modx)");
+			"MODX files (*.xml *.modx)");
 
 	if (fileName == "")
-		return;
+		return false;
 
 	setCurrentFile(fileName);
-	saveFile();
+	return saveFile();
 }
 
+bool MainWindow::askSave()
+{
+	int ret = QMessageBox::warning(
+				this,
+				tr("MODX Editor"),
+				tr("Save changes to document?"),
+				QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+
+	switch (ret)
+	{
+		case QMessageBox::Save:
+			return saveFile();
+		break;
+		case QMessageBox::Discard:
+			return true;
+		break;
+		case QMessageBox::Cancel:
+		default:
+			return false;
+		break;
+	}
+}
+
+void MainWindow::closeEvent(QCloseEvent *e)
+{
+	if (askSave())
+	{
+		e->accept();
+	}
+	else
+	{
+		e->ignore();
+	}
+}
 
 void MainWindow::changePage(int i)
 {
@@ -138,6 +210,7 @@ void MainWindow::addPage(const QString &title, Page *page)
 	page->show();
 	ui.pageList->addItem(title);
 	ui.stackedWidget->addWidget(page);
+//	ui.stackedWidget->addTab(page, title);
 }
 
 void MainWindow::setData(const ModXData *data)
@@ -151,5 +224,5 @@ void MainWindow::setData(const ModXData *data)
 void MainWindow::setCurrentFile(const QString &file)
 {
 	ModXApp::currentFile = file;
-	setWindowTitle(tr("ModX Editor - %1 [*]").arg(file));
+	setWindowTitle(tr("MODX Editor - %1 [*]").arg(file));
 }

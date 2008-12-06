@@ -1,9 +1,7 @@
-# -------------------------------------------------
-# Project created by QtCreator 2008-11-07T13:37:18
-# -------------------------------------------------
 CONFIG -= debug
 CONFIG += release
 TARGET = ModX
+
 TEMPLATE = app
 SOURCES += main.cpp \
     mainwindow.cpp \
@@ -16,7 +14,9 @@ SOURCES += main.cpp \
     modxwriter.cpp \
     pages/sqlpage.cpp \
     pages/filepage.cpp \
-    pages/diypage.cpp
+    pages/diypage.cpp \
+    pages/fileeditpage.cpp \
+    pages/editedfilespage.cpp
 HEADERS += mainwindow.h \
     modxapp.h \
     modxreader.h \
@@ -29,11 +29,18 @@ HEADERS += mainwindow.h \
     pages/sqlpage.h \
     pages/filepage.h \
     pages/diypage.h \
-    listmodel.h
+    listmodel.h \
+    pages/fileeditpage.h \
+    pages/editedfilespage.h
 FORMS += mainwindow.ui \
     pages/generalpage.ui \
     pages/changelogpage.ui \
     pages/authorgrouppage.ui \
     pages/sqlpage.ui \
     pages/filepage.ui \
-    pages/diypage.ui
+    pages/diypage.ui \
+    pages/fileeditpage.ui \
+    pages/editedfilespage.ui
+RC_FILE += resources/win.rc
+include(widgets/widgets.pri)
+OTHER_FILES += widgets/widgets.pri

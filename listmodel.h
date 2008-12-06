@@ -37,17 +37,14 @@ public:
 		if (index.row() < 0 || index.row() > rowCount() - 1)
 			return QVariant();
 
-		if (role == Qt::DisplayRole)
+		switch (role)
 		{
-			return QVariant(QString(m_data.at(index.row())));
-		}
-		else if (role == Qt::EditRole)
-		{
-			return QVariant::fromValue(m_data.at(index.row()));
-		}
-		else
-		{
-			return QVariant();
+			case Qt::DisplayRole:
+				return QVariant(QString(m_data.at(index.row())));
+			case Qt::EditRole:
+				return QVariant::fromValue(m_data.at(index.row()));
+			default:
+				return QVariant();
 		}
 	}
 
@@ -96,7 +93,8 @@ public:
 			return row;
 
 		m_data.swap(row, row - 1);
-		emit dataChanged(createIndex(row - 1, 0), createIndex(row, 0));
+//		emit dataChanged(createIndex(row - 1, 0), createIndex(row, 0));
+		reset();
 		return row - 1;
 	}
 
@@ -106,7 +104,8 @@ public:
 			return row;
 
 		m_data.swap(row, row + 1);
-		emit dataChanged(createIndex(row, 0), createIndex(row + 1, 0));
+//		emit dataChanged(createIndex(row, 0), createIndex(row + 1, 0));
+		reset();
 		return row + 1;
 	}
 

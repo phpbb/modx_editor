@@ -20,6 +20,7 @@ private:
 	void writeHistory();
 
 	void writeActionGroup();
+	void writeOpen();
 
 	const ModXData *m_data;
 };

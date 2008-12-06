@@ -1,18 +1,78 @@
 #include "modxdata.h"
 
-#include <QMetaProperty>
-
 ModXData::ModXData(QObject *parent) : QObject(parent)
 {
+	sqlDialect = DialectSqlParser;
+	installTime = 60;
+	installLevel = LevelIntermediate;
+	if (init)
+		return;
+	setUp();
 }
 
+void ModXData::setUp()
+{
+	sqlDialects.insert(DialectSqlParser,"sql-parser");
+	sqlDialects.insert(DialectMySql,	"mysql");
+	sqlDialects.insert(DialectMySql40,	"mysql_40");
+	sqlDialects.insert(DialectMySql41,	"mysql_41");
+	sqlDialects.insert(DialectMySqli,	"mysqli");
+	sqlDialects.insert(DialectMySql4,	"mysql4");
+	sqlDialects.insert(DialectMsAccess,	"mssaccess");
+	sqlDialects.insert(DialectOracle,	"oracle");
+	sqlDialects.insert(DialectPostgres,	"postgres");
+	sqlDialects.insert(DialectDb2,		"db2");
+	sqlDialects.insert(DialectFirebird,	"firebird");
+	sqlDialects.insert(DialectSqlite,	"sqlite");
+}
+
+QMap <ModXData::SqlDialect, QString> ModXData::sqlDialects;
+const QStringList ModXData::installationLevels = QStringList() << "easy" << "intermediate" << "advanced";
+bool ModXData::init = false;
+
+
+
+Action::Action()
+{
+	type = Find;
+	if (init)
+		return;
+	setUp();
+}
+
+QMap <Action::Type, QString> Action::types;
+QMap <Action::EditType, QString> Action::editTypes;
+
+
+bool Action::init = false;
+
+Author::Author()
+{
+	userName = "new Author";
+}
+
+ChangelogEntry::ChangelogEntry()
+{
+	version = "1.0.0";
+}
+
+void Action::setUp()
+{
+	types.insert(Action::Find,			"Find");
+	types.insert(Action::Edit,			"Edit");
+	types.insert(Action::InlineFind,	"Inline-Find");
+	types.insert(Action::InlineEdit,	"Inline-Edit");
+
+	editTypes.insert(Action::AfterAdd,	"after-add");
+	editTypes.insert(Action::BeforeAdd,	"before-add");
+	editTypes.insert(Action::Replace,	"replace");
+	editTypes.insert(Action::Operation,	"operation");
+}
+
+#ifndef QT_NO_DEBUG
 QDebug operator<<(QDebug dbg, const ModXData &d)
 {
 	dbg.nospace() << "ModXData (";
-	for (int i = d.metaObject()->propertyOffset(); i < d.metaObject()->propertyCount(); ++i)
-	{
-	 dbg.nospace() << "\n\t" << d.metaObject()->property(i).name() << " = " <<  d.metaObject()->property(i).read(&d).toString();
-	}
 	dbg.nospace() << "\n\ttitle = " << d.title;
 	dbg.nospace() << "\n\tdescription = " << d.description;
 	dbg.nospace() << "\n\tauthorNotes = " << d.authorNotes;
@@ -21,6 +81,8 @@ QDebug operator<<(QDebug dbg, const ModXData &d)
 	dbg.nospace() << "\n\tlicense = " << d.license;
 	dbg.nospace() << "\n\tinstallLevel = " << d.installLevel;
 	dbg.nospace() << "\n\tinstallTime = " << d.installTime;
+
+	dbg.nospace() << "\n\tactions = " << d.actions;
 
 	dbg.nospace() << "\n\tdiy = " << d.diy;
 
@@ -38,6 +100,7 @@ QDebug operator<<(QDebug dbg, const Author &a)
 	dbg.nospace() << "\n\t" << a.contributionStatus;
 	dbg.nospace() << "\n\t" << a.contributionFrom;
 	dbg.nospace() << "\n\t" << a.contributionTo;
+	dbg.nospace() << "\n)";
 	return dbg.space();
 }
 
@@ -47,5 +110,28 @@ QDebug operator<<(QDebug dbg, const ChangelogEntry &e)
 	dbg.nospace() << "\n\tdate = " << e.date.toString(Qt::ISODate);
 	dbg.nospace() << "\n\tversion = " << e.version;
 	dbg.nospace() << "\n\tChanges = " << e.changes;
+	dbg.nospace() << "\n)";
 	return dbg.space();
 }
+
+QDebug operator<<(QDebug dbg, const Action &a)
+{
+	dbg.nospace() << "Action (";
+	dbg.nospace() << "\n\t Type = " << a.type;
+	switch (a.type)
+	{
+		case Action::Find:
+		case Action::InlineFind:
+			dbg.nospace() << "\n\tfind = " << a.find;
+		break;
+		case Action::Edit:
+		case Action::InlineEdit:
+			dbg.nospace() << "\n\teditType = " << a.editType;
+			dbg.nospace() << "\n\tedit = " << a.edit;
+		break;
+	}
+	dbg.nospace() << "\n)";
+	return dbg.space();
+}
+
+#endif // QT_BO_DEBUG

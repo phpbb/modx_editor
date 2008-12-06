@@ -20,11 +20,13 @@ public:
 
 protected slots:
 	void updateFiles(bool checked);
+	void on_setLatestVersion_clicked();
 
 protected:
     virtual void changeEvent(QEvent *e);
 
 private:
+	void setRootDir();
 
 	QFileSystemModel *fileModel;
 	Ui::FilePage ui;

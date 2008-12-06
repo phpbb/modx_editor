@@ -187,6 +187,10 @@ Author ModXReader::readAuthor()
 			{
 				author.userName = readElementText();
 			}
+			else if (name() == "email")
+			{
+				author.email = readElementText();
+			}
 			else if (name() == "homepage")
 			{
 				author.homePage = readElementText();
@@ -223,7 +227,19 @@ void ModXReader::readInstallation()
 		{
 			if (name() == "level")
 			{
-				m_data->installLevel = readElementText();
+				QString level = readElementText().toLower();
+				if (level == "easy")
+				{
+					m_data->installLevel = ModXData::LevelEasy;
+				}
+				else if (level == "advanced")
+				{
+					m_data->installLevel = ModXData::LevelAdvanced;
+				}
+				else
+				{
+					m_data->installLevel = ModXData::LevelIntermediate;
+				}
 			}
 			else if (name() == "time")
 			{
@@ -348,6 +364,7 @@ void ModXReader::readActionGroup()
 		{
 			if (name() == "sql")
 			{
+				m_data->sqlDialect = ModXData::sqlDialects.key(attributes().value("dbms").toString(), ModXData::DialectSqlParser);
 				m_data->sql << readElementText();
 			}
 			else if (name() == "copy")
@@ -355,6 +372,11 @@ void ModXReader::readActionGroup()
 				m_data->copyFiles = true;
 				// Read <file> as unknown elements...
 				readUnknownElement();
+			}
+			else if (name() == "open")
+			{
+				QString file = attributes().value("src").toString();
+				m_data->actions[file] = readOpen();
 			}
 			else if (name() == "diy-instructions")
 			{
@@ -367,6 +389,116 @@ void ModXReader::readActionGroup()
 			}
 		}
 	}
+}
+
+QList<Action> ModXReader::readOpen()
+{
+	QList<Action> actions;
+
+	while (!atEnd())
+	{
+		readNext();
+
+		if (isEndElement())
+		{
+			break;
+		}
+
+		if (isStartElement())
+		{
+			if (name() == "edit")
+			{
+				actions << readEdit();
+			}
+			else
+			{
+				readUnknownElement();
+			}
+		}
+	}
+	return actions;
+}
+
+QList<Action> ModXReader::readEdit()
+{
+	QList<Action> actions;
+
+	while (!atEnd())
+	{
+		readNext();
+
+		if (isEndElement())
+		{
+			break;
+		}
+
+		if (isStartElement())
+		{
+			if (name() == "find")
+			{
+				Action action;
+				action.type = Action::Find;
+				action.find = readElementText();
+				actions << action;
+			}
+			else if (name() == "action")
+			{
+				Action action;
+				action.type = Action::Edit;
+				action.editType = Action::editTypes.key(attributes().value("type").toString(), Action::BeforeAdd);
+				action.edit = readElementText();
+				actions << action;
+			}
+			else if (name() == "inline-edit")
+			{
+				actions << readInlineEdit();
+			}
+			else
+			{
+				readUnknownElement();
+			}
+		}
+	}
+	return actions;
+}
+
+QList<Action> ModXReader::readInlineEdit()
+{
+	QList<Action> actions;
+
+	while (!atEnd())
+	{
+		readNext();
+
+		if (isEndElement())
+		{
+			break;
+		}
+
+		if (isStartElement())
+		{
+			if (name() == "inline-find")
+			{
+				Action action;
+				action.type = Action::InlineFind;
+				action.find = readElementText();
+				actions << action;
+			}
+			else if (name() == "inline-action")
+			{
+				Action action;
+				action.type = Action::InlineEdit;
+				action.editType = Action::editTypes.key(attributes().value("type").toString(), Action::BeforeAdd);
+				action.edit = readElementText();
+				actions << action;
+			}
+			else
+			{
+				readUnknownElement();
+			}
+		}
+	}
+	return actions;
 }
 
 /*void ModXReader::readActionGroup()

@@ -6,18 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>322</height>
+    <width>463</width>
+    <height>353</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
-   <property name="topMargin">
-    <number>0</number>
-   </property>
-   <property name="bottomMargin">
+   <property name="margin">
     <number>0</number>
    </property>
    <item>
@@ -83,13 +80,13 @@
         </property>
        </widget>
       </item>
-      <item row="4" column="1">
-       <widget class="QLineEdit" name="license"/>
-      </item>
       <item row="1" column="0">
        <widget class="QLabel" name="label_8">
         <property name="text">
          <string>Version:</string>
+        </property>
+        <property name="buddy">
+         <cstring>version</cstring>
         </property>
        </widget>
       </item>
@@ -97,6 +94,13 @@
        <widget class="QLineEdit" name="version">
         <property name="text">
          <string>1.0.0</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QComboBox" name="license">
+        <property name="editable">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -109,15 +113,33 @@
       <string>Installation</string>
      </property>
      <layout class="QFormLayout" name="formLayout_2">
-      <property name="fieldGrowthPolicy">
-       <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
-      </property>
       <item row="0" column="0">
        <widget class="QLabel" name="label_7">
         <property name="text">
          <string>Target Version:</string>
         </property>
+        <property name="buddy">
+         <cstring>targetVersion</cstring>
+        </property>
        </widget>
+      </item>
+      <item row="0" column="1">
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QLineEdit" name="targetVersion">
+          <property name="text">
+           <string>3.0.0</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="setLatestVersion">
+          <property name="text">
+           <string>Set Latest Version</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
       <item row="1" column="0">
        <widget class="QLabel" name="label_5">
@@ -128,9 +150,6 @@
          <cstring>installLevel</cstring>
         </property>
        </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QLineEdit" name="installLevel"/>
       </item>
       <item row="2" column="0">
        <widget class="QLabel" name="label_6">
@@ -162,14 +181,13 @@
         <property name="maximum">
          <number>86400</number>
         </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QLineEdit" name="targetVersion">
-        <property name="text">
-         <string>3.0.0</string>
+        <property name="singleStep">
+         <number>10</number>
         </property>
        </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QComboBox" name="installLevel"/>
       </item>
      </layout>
     </widget>
@@ -178,9 +196,12 @@
  </widget>
  <tabstops>
   <tabstop>title</tabstop>
+  <tabstop>version</tabstop>
   <tabstop>description</tabstop>
   <tabstop>authorNotes</tabstop>
   <tabstop>license</tabstop>
+  <tabstop>targetVersion</tabstop>
+  <tabstop>setLatestVersion</tabstop>
   <tabstop>installLevel</tabstop>
   <tabstop>installTime</tabstop>
  </tabstops>

@@ -19,7 +19,7 @@ GeneralPage::GeneralPage(QWidget *parent) :
    QStringList installationLevels;
    installationLevels	<< tr("Easy")
 						<< tr("Intermediate")
-						<< tr("hard");
+						<< tr("Hard");
 
    ui.installLevel->addItems(installationLevels);
 }

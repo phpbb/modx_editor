@@ -1,7 +1,6 @@
 CONFIG -= debug
 CONFIG += release
 TARGET = ModX
-
 TEMPLATE = app
 SOURCES += main.cpp \
     mainwindow.cpp \
@@ -16,7 +15,9 @@ SOURCES += main.cpp \
     pages/filepage.cpp \
     pages/diypage.cpp \
     pages/fileeditpage.cpp \
-    pages/editedfilespage.cpp
+    pages/editedfilespage.cpp \
+    version.cpp \
+    changelogsortfilterproxymodel.cpp
 HEADERS += mainwindow.h \
     modxapp.h \
     modxreader.h \
@@ -31,7 +32,9 @@ HEADERS += mainwindow.h \
     pages/diypage.h \
     listmodel.h \
     pages/fileeditpage.h \
-    pages/editedfilespage.h
+    pages/editedfilespage.h \
+    version.h \
+    changelogsortfilterproxymodel.h
 FORMS += mainwindow.ui \
     pages/generalpage.ui \
     pages/changelogpage.ui \

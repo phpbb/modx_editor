@@ -91,8 +91,6 @@ void SqlSyntaxHighlighter::highlightBlock(const QString &text)
 				while (index >= 0)
 				{
 					int length = expression.matchedLength();
-qDebug() << expression.pattern();
-qDebug() << text.mid(index, length);
 					setFormat(index, length, rule.format);
 					index = text.indexOf(expression, index + length);
 				}

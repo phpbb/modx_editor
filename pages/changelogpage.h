@@ -7,6 +7,8 @@
 
 #include "ui_changelogpage.h"
 
+class ChangelogSortFilterProxyModel;
+
 class ChangelogPage : public Page {
     Q_OBJECT
     Q_DISABLE_COPY(ChangelogPage)
@@ -22,14 +24,14 @@ protected slots:
 
 	void addVersion();
 	void removeVersion();
-	void moveUp();
-	void moveDown();
 
 protected:
     virtual void changeEvent(QEvent *e);
 
 private:
 	ListModel<ChangelogEntry> *model;
+	ChangelogSortFilterProxyModel *proxyModel;
+
 	Ui::ChangelogPage ui;
 };
 

@@ -1,5 +1,7 @@
 #include "changelogpage.h"
 
+#include "changelogsortfilterproxymodel.h"
+
 #include <QModelIndexList>
 
 ChangelogPage::ChangelogPage(QWidget *parent) :
@@ -7,18 +9,18 @@ ChangelogPage::ChangelogPage(QWidget *parent) :
 	ui.setupUi(this);
 
 	model = new ListModel<ChangelogEntry>(this);
+	proxyModel = new ChangelogSortFilterProxyModel(this);
+	proxyModel->setSourceModel(model);
+	proxyModel->setSortRole(Qt::EditRole);
+	proxyModel->sort(0, Qt::DescendingOrder);
 
-	ui.versionList->setModel(model);
+	ui.versionList->setModel(proxyModel);
 	ui.versionList->setSelectionMode(QAbstractItemView::SingleSelection);
 
 	connect(ui.versionList->selectionModel(),	SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)),	this,	SLOT(updateEntry(const QItemSelection &, const QItemSelection &)));
 	connect(ui.version,		SIGNAL(textChanged(const QString &)),								this,	SLOT(updateVersion(const QString &)));
 	connect(ui.add,			SIGNAL(clicked()),	this,	SLOT(addVersion()));
 	connect(ui.remove,		SIGNAL(clicked()),	this,	SLOT(removeVersion()));
-	connect(ui.moveUp,		SIGNAL(clicked()),	this,	SLOT(moveUp()));
-	connect(ui.moveDown,	SIGNAL(clicked()),	this,	SLOT(moveDown()));
-
-
 }
 
 
@@ -31,7 +33,7 @@ void ChangelogPage::setData(const ModXData *data)
 	}
 	else
 	{
-		ui.versionList->selectionModel()->select(model->index(0, 0), QItemSelectionModel::SelectCurrent);
+		ui.versionList->selectionModel()->select(proxyModel->index(0, 0), QItemSelectionModel::SelectCurrent);
 	}
 }
 
@@ -39,7 +41,9 @@ void ChangelogPage::getData(ModXData *data)
 {
 	QItemSelection selection = ui.versionList->selectionModel()->selection();
 	updateEntry(selection, selection);
-	data->history = model->list();
+	QList<ChangelogEntry> list = model->list();
+	qSort(list);
+	data->history = list;
 }
 
 
@@ -47,7 +51,7 @@ void ChangelogPage::updateEntry(const QItemSelection &newSelection, const QItemS
 {
 	if (oldSelection.count())
 	{
-		QModelIndexList list = oldSelection.indexes();
+		QModelIndexList list = proxyModel->mapSelectionToSource(oldSelection).indexes();
 
 		if (!list.isEmpty())
 		{
@@ -65,7 +69,7 @@ void ChangelogPage::updateEntry(const QItemSelection &newSelection, const QItemS
 	ChangelogEntry entry;
 	if (newSelection.count())
 	{
-		QModelIndexList list = newSelection.indexes();
+		QModelIndexList list = proxyModel->mapSelectionToSource(newSelection).indexes();
 		if (!list.isEmpty())
 		{
 			entry = model->data(list.at(0), Qt::EditRole).value<ChangelogEntry>();
@@ -78,56 +82,42 @@ void ChangelogPage::updateEntry(const QItemSelection &newSelection, const QItemS
 
 void  ChangelogPage::updateVersion(const QString &version)
 {
-	QModelIndexList list = ui.versionList->selectionModel()->selection().indexes();
+	QModelIndexList list = proxyModel->mapSelectionToSource(ui.versionList->selectionModel()->selection()).indexes();
 	if (list.isEmpty())
 		return;
 	QModelIndex index = list.at(0);
 	ChangelogEntry entry = model->data(index, Qt::EditRole).value<ChangelogEntry>();
+	if (entry.version == version)
+		return;
 	entry.version = version;
 	model->setData(index, QVariant::fromValue(entry));
+	proxyModel->invalidate();
 }
 
 void ChangelogPage::addVersion()
 {
-	model->insertRow(model->rowCount(), QModelIndex());
+	model->insertRow(model->rowCount());
+	proxyModel->invalidate();
 	ui.versionList->selectionModel()->clearSelection();
-	ui.versionList->selectionModel()->select(model->index(model->rowCount() - 1, 0), QItemSelectionModel::Select);
+	ui.versionList->selectionModel()->select(proxyModel->mapFromSource(model->index(model->rowCount() - 1, 0)), QItemSelectionModel::Select);
 }
 
 void ChangelogPage::removeVersion()
 {
-	QModelIndexList selected = ui.versionList->selectionModel()->selectedIndexes();
+	QModelIndexList selected = ui.versionList->selectionModel()->selection().indexes();
 	if (selected.isEmpty())
 		return;
-	int row = selected.at(0).row();
-	model->removeRow(row);
+	int modelRow = proxyModel->mapToSource(selected.at(0)).row();
+	int proxyModelRow = selected.at(0).row();
+
+	proxyModel->setSourceModel(0);
+	model->removeRow(modelRow);
+	proxyModel->setSourceModel(model);
+
 	if (model->rowCount())
 	{
-		ui.versionList->selectionModel()->select(model->index(row ? row - 1 : 0, 0), QItemSelectionModel::SelectCurrent);
+		ui.versionList->selectionModel()->select(proxyModel->index(proxyModelRow ? proxyModelRow - 1 : 0, 0), QItemSelectionModel::SelectCurrent);
 	}
-}
-
-void ChangelogPage::moveUp()
-{
-	QModelIndexList selected = ui.versionList->selectionModel()->selectedIndexes();
-	if (selected.isEmpty())
-		return;
-	int row = selected.at(0).row();
-
-	row = model->moveUp(row);
-	ui.versionList->selectionModel()->select(model->index(row, 0), QItemSelectionModel::SelectCurrent);
-
-}
-
-void ChangelogPage::moveDown()
-{
-	QModelIndexList selected = ui.versionList->selectionModel()->selectedIndexes();
-	if (selected.isEmpty())
-		return;
-	int row = selected.at(0).row();
-
-	row = model->moveDown(row);
-	ui.versionList->selectionModel()->select(model->index(row, 0), QItemSelectionModel::SelectCurrent);
 }
 
 void ChangelogPage::changeEvent(QEvent *e)

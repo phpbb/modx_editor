@@ -1,6 +1,8 @@
 #ifndef MODXDATA_H
 #define MODXDATA_H
 
+#include "version.h"
+
 #include <QObject>
 #include <QMetaType>
 #include <QDate>
@@ -11,7 +13,7 @@ class Author;
 class ChangelogEntry;
 class Action;
 
-typedef QString Version;
+//typedef QString Version;
 
 class ModXData : public QObject
 {
@@ -87,6 +89,11 @@ public:
 		return userName;
 	}
 
+	bool operator<(const Author &other) const
+	{
+		return userName < other.userName;
+	}
+
 	QString realName;
 	QString userName;
 	QString email;
@@ -111,6 +118,11 @@ public:
 	QDate date;
 	Version version;
 	QMap<QString, QStringList> changes;
+
+	bool operator<(const ChangelogEntry &other) const
+	{
+		return version < other.version;
+	}
 };
 
 class Action

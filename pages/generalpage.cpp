@@ -1,6 +1,9 @@
 #include "generalpage.h"
 
-#include "../modxdata.h"
+#include "modxdata.h"
+
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
 
 GeneralPage::GeneralPage(QWidget *parent) :
 	Page(parent){
@@ -22,6 +25,8 @@ GeneralPage::GeneralPage(QWidget *parent) :
 						<< tr("Hard");
 
    ui.installLevel->addItems(installationLevels);
+
+   manager = NULL;
 }
 
 void GeneralPage::setData(const ModXData *data)
@@ -50,6 +55,25 @@ void GeneralPage::getData(ModXData *data)
 	data->targetVersion = ui.targetVersion->text();
 }
 
+void GeneralPage::on_setLatestVersion_clicked()
+{
+	if (manager == NULL)
+	{
+		manager = new QNetworkAccessManager(this);
+		connect(manager, SIGNAL(finished(QNetworkReply *)), this, SLOT(handleNetworkReply(QNetworkReply *)));
+	}
+	manager->get(QNetworkRequest(QUrl("http://www.phpbb.com/updatecheck/30x.txt")));
+}
+
+void GeneralPage::handleNetworkReply(QNetworkReply *reply)
+{
+	if (reply->error() != QNetworkReply::NoError)
+	{
+		return;
+	}
+	QString latestVersion(reply->readLine(1024));
+	ui.targetVersion->setText(latestVersion.trimmed());
+}
 
 void GeneralPage::changeEvent(QEvent *e)
 {

@@ -18,7 +18,7 @@ ChangelogPage::ChangelogPage(QWidget *parent) :
 	ui.versionList->setSelectionMode(QAbstractItemView::SingleSelection);
 
 	connect(ui.versionList->selectionModel(),	SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)),	this,	SLOT(updateEntry(const QItemSelection &, const QItemSelection &)));
-	connect(ui.version,		SIGNAL(textChanged(const QString &)),								this,	SLOT(updateVersion(const QString &)));
+	connect(ui.version,		SIGNAL(textChanged(const QString &)),	this,	SLOT(updateVersion(const QString &)));
 	connect(ui.add,			SIGNAL(clicked()),	this,	SLOT(addVersion()));
 	connect(ui.remove,		SIGNAL(clicked()),	this,	SLOT(removeVersion()));
 }

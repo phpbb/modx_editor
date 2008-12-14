@@ -1,3 +1,5 @@
+QT += network
+
 CONFIG -= debug
 CONFIG += release
 TARGET = ModX

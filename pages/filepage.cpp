@@ -42,11 +42,6 @@ void FilePage::updateFiles(bool /*checked*/)
 	setRootDir();
 }
 
-void FilePage::on_setLatestVersion_clicked()
-{
-
-}
-
 void FilePage::changeEvent(QEvent *e)
 {
     switch(e->type()) {

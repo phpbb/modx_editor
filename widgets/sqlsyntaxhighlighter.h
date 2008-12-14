@@ -8,7 +8,6 @@ class SqlSyntaxHighlighter : public QSyntaxHighlighter
 public:
 	SqlSyntaxHighlighter(QTextDocument* parent = 0);
 	virtual ~SqlSyntaxHighlighter();
-	void setKeywordList(QStringList keywords);
 
 protected:
 	void highlightBlock(const QString &text);
@@ -22,13 +21,13 @@ private:
 		QTextCharFormat format;
 	};
 
-	QStringList keywords;
 	QVector<HighlightingRule> highlightingRules;
 	QTextCharFormat keywordFormat;
 	QTextCharFormat typeFormat;
 	QTextCharFormat operatorFormat;
 	QTextCharFormat stringLiteralFormat;
 	QTextCharFormat numericLiteralFormat;
+	static const QStringList keywords;
 };
 
 #endif // SQLSYNTAXHIGHLIGHTER_H

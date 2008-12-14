@@ -4,19 +4,9 @@
 
 SqlSyntaxHighlighter::SqlSyntaxHighlighter(QTextDocument* parent) : QSyntaxHighlighter(parent)
 {
-//	setRules();
-
-	QStringList keywords;
-	keywords << "CREATE";
-	setKeywordList(keywords);
-}
-
-
-void SqlSyntaxHighlighter::setKeywordList(QStringList keywords)
-{
-	this->keywords = keywords;
 	setRules();
 }
+
 
 void SqlSyntaxHighlighter::setRules()
 {
@@ -35,7 +25,7 @@ void SqlSyntaxHighlighter::setRules()
 	}
 
 	QStringList types;
-	types	<< "\\b(?:tiny|small|medium|big)int\\b"
+	types	<< "\\b(?:tiny|small|medium|big)?(int|text|blob)\\b"
 			<< "\\bvar(:?char|binary)\\b";
 
 	typeFormat.setForeground(Qt::darkYellow);
@@ -56,12 +46,12 @@ void SqlSyntaxHighlighter::setRules()
 
 	operatorFormat.setFontWeight(QFont::Bold);
 	operatorFormat.setForeground(Qt::darkMagenta);
-	rule.pattern = QRegExp("[-+\\/*<>%;,()]");
+	rule.pattern = QRegExp("[-+\\/*<>%;,()]|\\b(?:NOT|AND|OR|DIV|XOR)\\b");
 	rule.format = operatorFormat;
 	highlightingRules.append(rule);
 
 	stringLiteralFormat.setForeground(Qt::darkGreen);
-	rule.pattern = QRegExp("(['\"]).*\(\\1)");
+	rule.pattern = QRegExp("(['\"]).*(\\1)");
 	rule.format = stringLiteralFormat;
 	highlightingRules.append(rule);
 
@@ -101,3 +91,22 @@ void SqlSyntaxHighlighter::highlightBlock(const QString &text)
 	}
 
 }
+
+const QStringList SqlSyntaxHighlighter::keywords = QStringList() << "ADD" << "ALL" << "ALTER" << "ANALYZE" << "AS"
+								 << "ASC" << "BETWEEN" << "BY" << "CALL" << "COLLATE"
+								 << "COLUMN" << "CREATE" << "CROSS" << "CURRENT_DATE" << "CURRENT_TIME"
+								 << "CURRENT_TIMESTAMP" << "DATABASE" << "DAY_HOUR" << "DECLARE" << "DEFAULT"
+								 << "DELETE" << "DESC" << "DISTINCT" << "DROP" << "DUAL"
+								 << "EXISTS" << "EXPLAIN" << "FALSE" << "FROM" << "FULLTEXT"
+								 << "GRANT" << "GROUP" << "HAVING" << "IN" << "INDEX"
+								 << "INNER" << "INSERT" << "INTO" << "IS" << "JOIN"
+								 << "KEY" << "KEYS" << "LEFT" << "LIKE" << "LIMIT"
+								 << "LOCK" << "MATCH" << "MODIFIES" << "NATURAL" << "NULL"
+								 << "ON" << "OPTIMIZE" << "OR" << "ORDER" << "OUTER"
+								 << "PRECISION" << "PRIMARY" << "PROCEDURE" << "PURGE" << "RANGE"
+								 << "RENAME" << "REPLACE" << "REQUIRE" << "RIGHT" << "SCHEMA"
+								 << "SCHEMAS" << "SELECT" << "SEPARATOR" << "SET" << "SHOW"
+								 << "SQL" << "TABLE" << "TO" << "TRUE" << "UNION"
+								 << "UNIQUE" << "UPDATE" << "USE" << "USING" << "VALUES"
+								 << "WHEN" << "WHERE" << "WHILE" << "WITH" << "WRITE";
+

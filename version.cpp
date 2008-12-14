@@ -204,7 +204,7 @@ void Version::parse(const QString &version)
 #ifndef QT_NO_DEBUG
 QDebug operator<<(QDebug dbg, const Version &v)
 {
-	dbg.nospace() << "Version "/* << QString(v)*/;
+	dbg.nospace() << "Version " << QString(v);
 	return dbg.space();
 }
 #endif

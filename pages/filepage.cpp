@@ -7,8 +7,6 @@
 #include <QFileSystemModel>
 #include <QListWidgetItem>
 
-//#include <QNetwork
-
 #include <QDebug>
 
 FilePage::FilePage(QWidget *parent) :

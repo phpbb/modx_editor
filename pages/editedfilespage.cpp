@@ -47,7 +47,12 @@ void EditedFilesPage::on_addFiles_clicked()
 {
 	QModelIndexList list = ui.allFilesView->selectionModel()->selectedIndexes();
 
-	QString basepath = QFileInfo(ui.phpbbRootPath->text()).absoluteFilePath() + "/";
+	QString basepath = QFileInfo(ui.phpbbRootPath->text()).absoluteFilePath();
+
+	if (basepath[basepath.size() - 1] != '/')
+	{
+		basepath += "/";
+	}
 
 	QSet<QString> currentfiles = m_model->list().toSet();
 	QSet<QString> newFiles;

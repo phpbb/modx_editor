@@ -12,7 +12,7 @@
 #include "pages/editedfilespage.h"
 #include "pages/fileeditpage.h"
 #include "pages/diypage.h"
-
+#include "widgets/aboutdialog.h"
 
 
 #include <QFileDialog>
@@ -204,6 +204,13 @@ void MainWindow::changePage(int i)
 {
 	ui.stackedWidget->setCurrentIndex(i);
 }
+
+void MainWindow::on_actionAbout_triggered()
+{
+	AboutDialog dialog(this);
+	dialog.exec();
+}
+
 
 void MainWindow::addPage(const QString &title, Page *page)
 {

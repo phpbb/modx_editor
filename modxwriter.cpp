@@ -173,15 +173,7 @@ void ModXWriter::writeActionGroup()
 	if (m_data->copyFiles)
 	{
 		writeStartElement("copy");
-/*		for (QMap<QString, QString>::ConstIterator i = m_data->copyInstructions.constBegin(); i != m_data->copyInstructions.constEnd(); ++i)
-		{
-			writeStartElement("file");
-				writeAttribute("from", i.key());
-				writeAttribute("to", i.value());
-			writeEndElement();
-		}
-*/
-			writeComment("A_Jelly_Donut said this is enough to copy all files from root/ recursively\nespecially the to=\"*.*\" part!");
+			writeComment("A_Jelly_Donut said this is enough to copy all files from root/ recursively.\n\tEspecially the to=\"*.*\" part!");
 			writeStartElement("file");
 				writeAttribute("from", "root/*.*");
 				writeAttribute("to", "*.*");

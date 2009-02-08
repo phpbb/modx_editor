@@ -25,6 +25,8 @@ public slots:
 
 	void changePage(int i);
 
+	void on_actionAbout_triggered();
+
 protected:
 	void closeEvent(QCloseEvent *event);
 

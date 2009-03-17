@@ -1,3 +1,23 @@
+/***************************************************************************
+ *   Copyright (C) 2009 by the phpBB Group                                 *
+ *   phpbb.com                                                             *
+ *                                                                         *
+ *  This file is part of MODX Editor.                                      *
+ *                                                                         *
+ *  MODX Editor is free software: you can redistribute it and/or modify    *
+ *  it under the terms of the GNU General Public License as published by   *
+ *  the Free Software Foundation, either version 3 of the License, or      *
+ *  (at your option) any later version.                                    *
+ *                                                                         *
+ *  MODX Editor is distributed in the hope that it will be useful,         *
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of         *
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          *
+ *  GNU General Public License for more details.                           *
+ *                                                                         *
+ *  You should have received a copy of the GNU General Public License      *
+ *  along with MODX Editor.  If not, see <http://www.gnu.org/licenses/>.   *
+ ***************************************************************************/
+
 #ifndef MODXDATA_H
 #define MODXDATA_H
 
@@ -12,8 +32,6 @@
 class Author;
 class ChangelogEntry;
 class Action;
-
-//typedef QString Version;
 
 class ModXData : public QObject
 {
@@ -183,59 +201,10 @@ private:
 	static void setUp();
 };
 
-// --------------------------------------------------------------
-// @todo Why does macro fail, while macro contents works?
-/*
-Q_DECLARE_META_TYPE(ChangelogEntry);
-Q_DECLARE_META_TYPE(Author);
-Q_DECLARE_META_TYPE(Action);
+Q_DECLARE_METATYPE(ChangelogEntry);
+Q_DECLARE_METATYPE(Author);
+Q_DECLARE_METATYPE(Action);
 
-*/
-QT_BEGIN_NAMESPACE
-template <>
-struct QMetaTypeId< ChangelogEntry >
-{
-	enum { Defined = 1 };
-	static int qt_metatype_id()
-		{
-			static QBasicAtomicInt metatype_id = Q_BASIC_ATOMIC_INITIALIZER(0);
-			if (!metatype_id)
-				metatype_id = qRegisterMetaType< ChangelogEntry >("ChangelogEntry");
-			return metatype_id;
-		}
-};
-QT_END_NAMESPACE
-
-QT_BEGIN_NAMESPACE
-template <>
-struct QMetaTypeId< Action >
-{
-	enum { Defined = 1 };
-	static int qt_metatype_id()
-		{
-			static QBasicAtomicInt metatype_id = Q_BASIC_ATOMIC_INITIALIZER(0);
-			if (!metatype_id)
-				metatype_id = qRegisterMetaType< Action >("Action");
-			return metatype_id;
-		}
-};
-QT_END_NAMESPACE
-
-QT_BEGIN_NAMESPACE
-template <>
-struct QMetaTypeId< Author >
-{
-	enum { Defined = 1 };
-	static int qt_metatype_id()
-		{
-			static QBasicAtomicInt metatype_id = Q_BASIC_ATOMIC_INITIALIZER(0);
-			if (!metatype_id)
-				metatype_id = qRegisterMetaType< Author >("Author");
-			return metatype_id;
-		}
-};
-QT_END_NAMESPACE
-// --------------------------------------------------------------
 
 #ifndef QT_NO_DEBUG
 QDebug operator<<(QDebug dbg, const ModXData &d);

@@ -2,7 +2,7 @@ QT += network
 
 CONFIG -= debug
 CONFIG += release
-TARGET = ModX
+TARGET = MODXEditor
 TEMPLATE = app
 SOURCES += main.cpp \
     mainwindow.cpp \
@@ -46,6 +46,9 @@ FORMS += mainwindow.ui \
     pages/diypage.ui \
     pages/fileeditpage.ui \
     pages/editedfilespage.ui
-RC_FILE += resources/win.rc
+
+win32 {
+    RC_FILE += resources/win.rc
+}
+
 include(widgets/widgets.pri)
-OTHER_FILES += widgets/widgets.pri

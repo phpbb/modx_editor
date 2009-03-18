@@ -85,7 +85,7 @@ void Action::setUp()
 
 	editTypes.insert(Action::AfterAdd,	"after-add");
 	editTypes.insert(Action::BeforeAdd,	"before-add");
-	editTypes.insert(Action::Replace,	"replace");
+	editTypes.insert(Action::Replace,	"replace-with");
 	editTypes.insert(Action::Operation,	"operation");
 }
 

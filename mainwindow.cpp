@@ -46,6 +46,8 @@
 MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
     : QMainWindow(parent, flags)
 {
+	data = 0;
+
 	init = true;
 	ui.setupUi(this);
 
@@ -92,7 +94,8 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 
 MainWindow::~MainWindow()
 {
-
+	if (data)
+		delete data;
 }
 
 void MainWindow::newFile()
@@ -137,9 +140,13 @@ qDebug() << reader.errorString();
 	}
 qDebug() << "SUCESS!!";
 
-	ModXData *data = reader.data();
+	if (data)
+		delete data;
+
+	data = new ModXData;
+
+	data = reader.data();
 	setData(data);
-	delete data;
 
 	ui.statusBar->showMessage(tr("Opened file: %1").arg(file.fileName()));
 }
@@ -151,18 +158,16 @@ bool MainWindow::saveFile()
 		return saveFileAs();
 	}
 
-	ModXData data;
-
 	for (int i = 0; i < ui.stackedWidget->count(); ++i)
 	{
-		qobject_cast<Page *>(ui.stackedWidget->widget(i))->getData(&data);
+		qobject_cast<Page *>(ui.stackedWidget->widget(i))->getData(data);
 	}
 
 	QFile file(ModXApp::currentFile);
 	file.open(QIODevice::WriteOnly);
 
 	ModXWriter writer;
-	writer.setData(&data);
+	writer.setData(data);
 
 	writer.write(&file);
 	ui.statusBar->showMessage(tr("File Saved"));

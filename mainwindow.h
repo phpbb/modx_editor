@@ -57,6 +57,7 @@ private:
 	void setCurrentFile(const QString &file);
 
 	PagePanel *pagePanel;
+	ModXData *data;
 
 	Ui::MainWindowClass ui;
 	bool init;

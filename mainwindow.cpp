@@ -40,6 +40,7 @@
 #include <QDesktopServices>
 #include <QListWidgetItem>
 #include <QCloseEvent>
+#include <QSettings>
 
 #include <QDebug>
 
@@ -55,7 +56,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 	setCurrentFile("Untitled");
 
 	connect(ui.actionNew,	SIGNAL(triggered()),	this,	SLOT(newFile()));
-	connect(ui.actionOpen,	SIGNAL(triggered()),	this,	SLOT(loadFile()));
+	connect(ui.actionOpen,	SIGNAL(triggered()),	this,	SLOT(openFile()));
 	connect(ui.actionSave,	SIGNAL(triggered()),	this,	SLOT(saveFile()));
 	connect(ui.actionSaveAs,SIGNAL(triggered()),	this,	SLOT(saveFileAs()));
 	connect(ui.actionQuit,	SIGNAL(triggered()),	this,	SLOT(close()));
@@ -88,7 +89,11 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 		ui.splitter->setSizes(sizes);
 		ui.splitter->setCollapsible(1, false);
 	}
-	newFile();
+
+	loadSettings();
+
+	openFile(ModXApp::currentFile);
+
 	init = false;
 }
 
@@ -114,8 +119,11 @@ void MainWindow::newFile()
 	setData(&data);
 }
 
-void MainWindow::loadFile()
+void MainWindow::openFile()
 {
+	if (!askSave())
+		return;
+
 	QString fileName = QFileDialog::getOpenFileName(
 			this,
 			tr("Open MODX file..."),
@@ -125,7 +133,21 @@ void MainWindow::loadFile()
 	if (fileName == "")
 		return;
 
+	openFile(fileName, true);
+}
+
+void MainWindow::openFile(const QString &fileName, bool force)
+{
+	if (!init && !force && !askSave())
+		return;
+
 	setCurrentFile(fileName);
+
+	if (fileName == "Untitled")
+	{
+		newFile();
+		return;
+	}
 
 	ModXReader reader;
 	QFile file(fileName);
@@ -217,6 +239,7 @@ void MainWindow::closeEvent(QCloseEvent *e)
 {
 	if (askSave())
 	{
+		saveSettings();
 		e->accept();
 	}
 	else
@@ -257,4 +280,29 @@ void MainWindow::setCurrentFile(const QString &file)
 {
 	ModXApp::currentFile = file;
 	setWindowTitle(tr("MODX Editor - %1 [*]").arg(file));
+}
+
+void MainWindow::loadSettings()
+{
+	QSettings settings;
+
+	settings.beginGroup("mainWindow");
+		ModXApp::currentFile = settings.value("currentFile", "Untitled").toString();
+		if (!QFile(ModXApp::currentFile).exists())
+			ModXApp::currentFile = "Untitled";
+
+		restoreGeometry(settings.value("geometry").toByteArray());
+		ui.splitter->restoreGeometry(settings.value("splitterGeometry").toByteArray());
+	settings.endGroup();
+}
+
+void MainWindow::saveSettings()
+{
+	QSettings settings;
+
+	settings.beginGroup("mainWindow");
+		settings.setValue("currentFile", ModXApp::currentFile);
+		settings.setValue("geometry", saveGeometry());
+		settings.setValue("splitterGeometry", ui.splitter->saveGeometry());
+	settings.endGroup();
 }

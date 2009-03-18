@@ -38,9 +38,11 @@ public:
 
 public slots:
 	void newFile();
-	void loadFile();
+	void openFile();
+	void openFile(const QString &file, bool force = false);
 	bool saveFile();
 	bool saveFileAs();
+
 	bool askSave();
 
 	void changePage(int i);
@@ -55,6 +57,9 @@ private:
 	void setData(const ModXData *data);
 
 	void setCurrentFile(const QString &file);
+
+	void loadSettings();
+	void saveSettings();
 
 	PagePanel *pagePanel;
 	ModXData *data;

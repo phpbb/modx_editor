@@ -18,10 +18,13 @@
  *  along with MODX Editor.  If not, see <http://www.gnu.org/licenses/>.   *
  ***************************************************************************/
 
+#include <QSettings>
 #include "modxapp.h"
 
-ModXApp::ModXApp(int argc, char **argv) : QApplication(argc, argv)
+ModXApp::ModXApp(int &argc, char **argv) : QApplication(argc, argv)
 {
+	QSettings::setDefaultFormat(QSettings::IniFormat);
+
 	mainWin = new MainWindow();
 
 	mainWin->show();

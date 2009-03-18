@@ -20,12 +20,12 @@
 
 #include "modxapp.h"
 
-int main(int argc, char *argv[])
+int main(int argc, char **argv)
 {
 	QCoreApplication::setApplicationName("MODX Editor");
 	QCoreApplication::setOrganizationName("phpBB Group");
 	QCoreApplication::setOrganizationDomain("phpbb.com");
-	QCoreApplication::setApplicationVersion("1.0.0A2");
+	QCoreApplication::setApplicationVersion("1.0.0A3");
 
 	ModXApp app(argc, argv);
 	return app.exec();

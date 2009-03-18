@@ -24,11 +24,10 @@
 #include <QApplication>
 #include "mainwindow.h"
 
-
 class ModXApp : public QApplication
 {
 public:
-	ModXApp(int argc, char **argv);
+	ModXApp(int &argc, char **argv);
 	virtual ~ModXApp();
 
 	static QString currentFile;

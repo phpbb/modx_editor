@@ -113,10 +113,12 @@ void MainWindow::newFile()
 		}
 	}
 	setCurrentFile("Untitled");
-	ModXData data;
-	data.authorGroup << Author();
-	data.history << ChangelogEntry();
-	setData(&data);
+	if (data)
+		delete data;
+	data = new ModXData;
+	data->authorGroup << Author();
+	data->history << ChangelogEntry();
+	setData(data);
 }
 
 void MainWindow::openFile()
